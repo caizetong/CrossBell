@@ -43,7 +43,7 @@ app.use('/wechat', wechat(config, function (req, res, next) {
    //  }
    if((message.MsgType == 'event') && (message.Event == 'subscribe'))
    {  
-      var homePage = "<a href='http://crossbell.duapp.com/'>公众号主页</a>";
+      var homePage = "<a href='http://crossbell.herokuapp.com/'>公众号主页</a>";
       var magicMusic = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=1&sn=79ce26b5ea15ce6275ee3e0cc6fd9d00&chksm=71b6767946c1ff6ffe48fe9db490b864fcf565087e6a81078e0b344b6bd35c719b50aaab893a#rd'>Grad Erlija - Retrospektiva</a>";
       var magicMusic2 = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244250&idx=1&sn=92678ea2ceedf0b46db8c6329faf0397&chksm=71b6767646c1ff60308ed9b0f3aa0b091c599c88f6bdbf24d5d0c213b85385447d12982b7d74#rd'>歌に形はないけれど゙</a>";
       var replyString = "感谢你的关注！\n" + homePage  + "\n以下是音乐推荐\n" + magicMusic + "\n" + magicMusic2 + "\n回复\nmagic\njp\n可以查看更多歌单\n输入-roll 或者 roll 可以随机100以内的数字";
