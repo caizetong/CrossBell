@@ -1,0 +1,383 @@
+<html ng-app="ionicApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=0, width=device-width">
+    <title>CrossBell</title>
+    <link href="../ionic/css/ionic.min.css" rel="stylesheet">
+    <script src="../ionic/js/ionic.bundle.min.js"></script>
+    <script type="text/javascript" src="../jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="../jquery/jQueryRotate.2.2.js"></script>
+    <style>
+    body {
+        text-align: center
+    }
+    
+    .coverimage {
+        border-radius: 50%;
+        height: 10em;
+        width: 10em;
+        /*        -webkit-animation: music_disc 40s linear infinite;
+        -moz-animation: music_disc 40s linear infinite;
+        -o-animation: music_disc 40s linear infinite;
+        animation: music_disc 40s linear infinite;
+        -webkit-animation-play-state:paused;*/
+    }
+    
+    .coverimagestop {
+        border-radius: 50%;
+        height: 10em;
+        width: 10em;
+        /*        -webkit-animation: music_disc 40s linear infinite;
+        -moz-animation: music_disc 40s linear infinite;
+        -o-animation: music_disc 40s linear infinite;
+        animation: music_disc;
+        -webkit-animation-play-state:paused;*/
+        animation-play-state: paused;
+    }
+    
+    #play {
+        height: 2em;
+        width: 2em;
+    }
+    /*    .progressbar {
+        width: 15em;
+        height: 0.5em;
+        border-radius: 0.25em;
+        background: red;
+        text-align: center;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: auto;
+        margin-right: auto;
+    }*/
+    
+    .progressbar .orange,
+    .green,
+    .blue,
+    .red,
+    .black {
+        border-radius: 0.5em;
+        position: relative;
+        text-align: left;
+        color: #ffffff;
+        height: 0.5em;
+        line-height: 1em;
+        display: block;
+    }
+    
+    .time {
+        float: left
+    }
+    
+    .progressbar {
+        /*float: left;*/
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        width: 70%;
+        border-radius: 0.5em;
+        position: relative;
+        background-color: #F0EFEF;
+        border: 1px solid #66CC33;
+        padding: 0px;
+    }
+    
+    .progressbar .green {
+        background-color: #66CC33;
+    }
+    
+    @-webkit-keyframes music_disc {
+        0% {
+            -webkit-transform: rotate(0deg);
+            -ms-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+            background: black;
+            color: red;
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+            background: white;
+            color: blue;
+        }
+    }
+    
+    @-webkit-keyframes rotating {
+        from {
+            -webkit-transform: rotate(0)
+        }
+        to {
+            -webkit-transform: rotate(360deg)
+        }
+    }
+    
+    @keyframes rotating {
+        from {
+            transform: rotate(0)
+        }
+        to {
+            transform: rotate(360deg)
+        }
+    }
+    
+    @-moz-keyframes rotating {
+        from {
+            -moz-transform: rotate(0)
+        }
+        to {
+            -moz-transform: rotate(360deg)
+        }
+    }
+    </style>
+    <script>
+    var app = angular.module('ionicApp', ['ionic']);
+    app.controller('myCtrl', function($scope) {
+        $scope.imagename = "images/Grad Erlija -Retrospektiva-.jpg";
+        $scope.mp3name = "music/Rigel Theatre - Grad Erlija -Retrospektiva-.mp3";
+        $scope.palyImage = "images/play.png";
+        $scope.pauseIamge = "images/pause.png";
+        $scope.palyImageSelected = "images/playOn.png";
+
+    });
+
+
+    function progressClick(e) {
+        // body...
+        // alert(e.offsetX)
+
+
+        var pbj = document.getElementById("progressbg");
+        var curTime = e.offsetX / pbj.clientWidth * vid.duration;
+        vid.currentTime = curTime;
+    }
+
+    function mp3play() {
+        // body...
+        vid.play();
+    }
+
+    function timeChange() { //默认获取的时间是时间戳改成我们常见的时间格式
+        //分钟
+        var curTime = timeFormatted(vid.currentTime);
+        var totalTime = timeFormatted(vid.duration);
+        document.getElementById("time").innerHTML = curTime + "/" + totalTime
+    }
+
+    function timeFormatted(time) {
+        // body...
+        var minute = time / 60;
+        var minutes = parseInt(minute);
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+        //秒
+        var second = time % 60;
+        seconds = parseInt(second);
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        }
+        var allTime = "" + minutes + "" + ":" + "" + seconds + ""
+        return allTime;
+    }
+
+    function playAction() {
+
+        if (vid.paused) {
+            vid.play();
+        } else {
+            vid.pause();
+        }
+    }
+
+    function updateState(isplay) {
+        // body...
+        if (isplay) {
+            document.getElementById("play").src = "images/pause.png";
+        } else {
+            document.getElementById("play").src = "images/play.png";
+        }
+
+    }
+
+    function getElementLeft(element) {　　　　
+        var actualLeft = element.offsetLeft;　　　　
+        var current = element.offsetParent;　　　　
+        while (current !== null) {　　　　　　
+            actualLeft += current.offsetLeft;　　　　　　
+            current = current.offsetParent;　　　　
+        }　　　　
+        return actualLeft;　　
+    }　　
+    function getElementTop(element) {　　　　
+        var actualTop = element.offsetTop;　　　　
+        var current = element.offsetParent;　　　　
+        while (current !== null) {　　　　　　
+            actualTop += current.offsetTop;　　　　　　
+            current = current.offsetParent;　　　　
+        }　　　　
+        return actualTop;　　
+    }
+    </script>
+    <script type="text/javascript">
+    var currentAngle = new Number;
+    currentAngle = 0;
+
+    function rotation() {
+        $("#rotate").rotate({
+            duration: 40000,
+            angle: currentAngle,
+            animateTo: 360 + currentAngle,
+            callback: rotation,
+            easing: function(x, t, b, c, d) {
+                return c * (t / d) + b;
+            }
+        });
+    };
+
+    function stopRotation() {
+        // body...
+        $("#rotate").stopRotate();
+        currentAngle = parseFloat($("#rotate").getRotateAngle());
+    }
+    </script>
+</head>
+
+<body ng-controller="myCtrl">
+    <div class="bar bar-header bar-balanced">
+        <h1 class="title">Music</h1>
+    </div>
+    <div class="content has-header padding">
+        <div class="content">
+            <img id="rotate" class="coverimage" ng-src="{{imagename}}" }/></div>
+        <div class="content">
+            <p>Rigel Theatre - Grad Erlija - Retrospektiva -</p>
+            <p>
+                <audio ng-src="{{mp3name}}" id="myVideo" preload="auto">
+                    您的浏览器不支持audio属性，请更换浏览器在进行浏览。
+                </audio>
+            </p>
+            <!--       <div class="time">
+                <p>123</p>
+            </div> -->
+            <div id="progressbg" class="progressbar" onclick="progressClick(event)">
+                <span id="progress" class="green" style="width:0%;"></span>
+            </div>
+            <!--     <div>
+                <p>1231</p>
+            </div> -->
+            <p><img id="play" ng-src="{{palyImage}}" style="cursor:hand;" onClick="playAction()"></p>
+            <p>播放位置: <span id="time"></span></p>
+            <p>State: <span id="state"></span></p>
+            <!-- <p><a href="#" onclick="mp3play()">123 </a></p> -->
+        </div>
+    </div>
+    <script>
+    // 获取 id="myVideo" 的 video 元素
+    var vid = document.getElementById("myVideo");
+    var img = document.getElementById("rotate");
+    var moving = false;
+    // 为 video 元素添加 ontimeupdate 事件，如果当前播放位置改变则执行函数  
+    vid.ontimeupdate = function() {
+        timeUpdate()
+    };
+
+    var pbj = document.getElementById("progressbg");
+    pbj.addEventListener("touchstart", touchStart, false);
+    pbj.addEventListener("touchmove", touchMove, false);
+    pbj.addEventListener("touchend", touchEnd, false);
+
+    function touchStart(e) {
+        e.preventDefault();
+        moving = true;
+        var touch = e.touches[0];
+        resultX = touch.pageX;
+        var pbj = document.getElementById("progressbg");
+        var percent = (resultX - getElementLeft(pbj)) / pbj.offsetWidth * 100;
+        changeProgress(percent);
+
+    }
+
+    function touchMove(e) { //滑动          
+        e.preventDefault();
+        moving = true;
+        var touch = e.touches[0];
+        resultX = touch.pageX;
+        var pbj = document.getElementById("progressbg");
+        var percent = (resultX - getElementLeft(pbj)) / pbj.offsetWidth * 100;
+        changeProgress(percent);
+        // vid.currentTime = curTime;
+        // if (needPlay) 
+        // {
+        //     vid.play();
+        // };
+    }
+
+    function touchEnd(e) { //手指离开屏幕
+        e.preventDefault();
+        var touch = e.changedTouches[0]; //touchend好像只有changedTouches
+        resultX = touch.pageX;
+        var pbj = document.getElementById("progressbg");
+        var percent = (resultX - getElementLeft(pbj)) / pbj.offsetWidth * 100;
+        if (changeProgress(percent)) {
+            var curTime = percent * vid.duration / 100;
+            var needPlay = !vid.paused;
+            vid.currentTime = curTime;
+            if (needPlay) {
+                vid.play();
+            };
+        }
+
+
+    }
+
+    function changeProgress(percent) {
+        // body...
+        var result = false;
+        if (percent <= 100 && percent >= 0) {
+            document.getElementById("progress").style.width = percent + "%";
+            result = true;
+        };
+        return result;
+    }
+
+    vid.addEventListener('play',  function() {
+        // img.className = "coverimage";    
+        // img.style.animationPlayState = "running";
+        updateState(true);
+        document.getElementById("state").innerHTML = "play ";
+        rotation();
+
+    },  false);
+    vid.addEventListener('pause',  function() {
+        // img.className = "coverimagestop";
+        // img.style.animationPlayState = "paused";
+        updateState(false);
+        document.getElementById("state").innerHTML = "pause ";
+        stopRotation();
+
+    },  false);
+
+    function timeUpdate() {
+        // 显示 id="demo" 的 p 元素中视频的播放位置 
+        // document.getElementById("time").innerHTML = vid.currentTime + '/' + vid.duration + ' ' + vid.currentTime / vid.duration * 100;
+        // var vabar = $("#vader");
+        // vd.ProgressBarWars.porcentaje = vid.currentTime/vid.duration * 100;
+        // vd.mover(50);
+        if (!moving) {
+            changeProgress(vid.currentTime / vid.duration * 100);
+        };
+
+
+        timeChange();
+    }
+    </script>
+</body>
+
+</html>

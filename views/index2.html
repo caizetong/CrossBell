@@ -1,0 +1,139 @@
+<html ng-app="ionicApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>CrossBell</title>
+    <link href="../ionic/css/ionic.min.css" rel="stylesheet">
+    <script src="../ionic/js/ionic.bundle.min.js"></script>
+    <script>
+    function displayDate() {
+        document.getElementById("demo2").innerHTML = Date();
+    }
+    </script>
+    <script type="text/javascript">
+    var app = angular.module('ionicApp', ['ionic']);
+    app.config(function($stateProvider, $urlRouterProvider) {
+        $stateProvider
+            .state('index', {
+                url: '/index',
+                templateUrl: 'home'
+            })
+            .state('music', {
+                url: '/music',
+                templateUrl: 'music.html'
+            });
+        $urlRouterProvider.otherwise("/index");
+    });
+    app.controller('HomeCtrl', function($scope) {
+        console.log('HomeCtrl');
+    });
+
+    function HomeCtrl($scope, $ionicNavBarDelegate) {
+        $scope.getPreviousTitle = function() {
+            return $ionicNavBarDelegate.getPreviousTitle();
+        };
+    }
+    </script>
+    <script type="text/javascript">
+    myVid = document.getElementById("video1");
+
+    function getCurTime() {
+        alert(myVid.currentTime);
+    }
+    </script>
+</head>
+
+<body>
+    <!--   <div class="bar bar-header">
+      <div class="h1 title">这是标题</div>
+    </div> -->
+    <!-- 当我们浏览时，导航栏会随之更新。 -->
+    <ion-nav-bar animation="nav-title-slide-ios7" class="bar-positive" ng-controller="HomeCtrl">
+        <ion-nav-back-button class="button-icon">
+            <i class="icon ion-arrow-left-c"></i>{{getPreviousTitle() || 'Back'}}
+        </ion-nav-back-button>
+    </ion-nav-bar>
+    <!-- <div class="content has-header padding">
+        
+    </div> -->
+    <ion-nav-view>
+    </ion-nav-view>
+    <script id="home" type="text/ng-template">
+
+        <ion-view view-title="Home">
+            <ion-content class="content has-header padding" ng-controller="HomeCtrl">
+                <p>
+                    <a class="button icon icon-right ion-chevron-right" href="#/music">Scientific Facts</a>
+                </p>
+                <p>
+                    <a class="button icon icon-right ion-chevron-right" href="html/music.html" >Scientific Facts</a>
+                </p>
+                <p>
+                    <button class="button button-light" ng-click="getCurTime()">
+                        button-light
+                    </button>
+                </p>
+                <p>
+                    <audio src="music/Rigel Theatre - Grad Erlija -Retrospektiva-.mp3" id="video1" autoplay="autoplay" controls="controls" preload="auto">
+                        您的浏览器不支持audio属性，请更换浏览器在进行浏览。
+                    </audio>
+                </p>
+                <p>播放位置: <span id="demo"></span></p>
+            </ion-content>
+        </ion-view>
+    </script>
+    <script id="music.html" type="text/ng-template">
+        <ion-view view-title="Music">
+            <ion-content class="content has-header padding" ng-controller="HomeCtrl">
+                <p>
+                    <a class="button icon icon-right ion-chevron-right" href="#/music">Scientific 1Facts</a>
+                </p>
+                <p>
+                    <a class="button icon icon-right ion-chevron-right" href="#/tab/facts">Scientific 1Facts</a>
+                </p>
+                <p>
+                    <a class="button icon icon-right ion-chevron-right" href="#/tab/facts">Scientific 1Facts</a>
+                </p>
+            </ion-content>
+        </ion-view>
+    </script>
+    <!--         <div class="bar bar-subheader">
+            <h2 class="title">Sub Header</h2>
+            <a href="#/app/playlists" class="button button-icon icon ion-ios-undo-outline"></a>
+            <a href="#/app/capture" class="button button-icon icon ion-ios-redo-outline"></a>
+        </div> -->
+    <!--     <div class="bar bar-footer bar-balanced">
+        <button class="button button-clear">Left</button>
+        <div class="title">
+            <button ng-click="captureVideo();" class="button button-clear button-icon icon ion-ios7-videocam-outline"></button>
+        </div>
+        <button class="button button-clear">Right</button>
+    </div>
+    <div class="content has-header ionic-pseudo">
+    <button class="button button-assertive" onclick="showList()">列表页</button>
+    </div> -->
+    <!--     <div class="bar bar-header">
+        <button class="button icon ion-navicon"></button>
+        <h1 class="title">Header Buttons</h1>
+        <button class="button">Edit</button>
+    </div>
+    <div class="bar bar-header">
+        <button class="button button-icon icon ion-navicon"></button>
+        <div class="h1 title">Header Buttons</div>
+        <button class="button button-clear button-positive">Edit</button>
+    </div> -->
+    <!-- <ion-view title="Home" hide-nav-bar="true">
+        <ion-scroll zooming="true" direction="xy" style="width: 50px; height: 50px">
+            <div style="width: 500px; height: 500px;" class="content has-header padding">
+                <div class="button-bar">
+                    <a class="button button-dark">First</a>
+                    <a class="button button-assertive">Second</a>
+                    <a class="button button-balanced">Third</a>
+                </div>
+            </div>
+        </ion-scroll>
+    </ion-view> -->
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Music</title>
+</head>
+
+<body>
+    <p><div class="progress" id="vader"></div>
+    </p>
+    <audio src="../music/Rigel Theatre - Grad Erlija -Retrospektiva-.mp3" id="myVideo" autoplay="autoplay" controls="controls" preload="auto">
+        您的浏览器不支持audio属性，请更换浏览器在进行浏览。
+    </audio>
+    <p>播放位置: <span id="demo"></span></p>
+    <script>
+    // 获取 id="myVideo" 的 video 元素
+    var vid = document.getElementById("myVideo");
+
+    // 为 video 元素添加 ontimeupdate 事件，如果当前播放位置改变则执行函数  
+    vid.ontimeupdate = function() {
+        myFunction()
+    };
+
+    function myFunction() {
+        // 显示 id="demo" 的 p 元素中视频的播放位置 
+        document.getElementById("demo").innerHTML = vid.currentTime;
+    }
+    </script>
+</body>
+
+</html>
