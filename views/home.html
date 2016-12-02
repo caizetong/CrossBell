@@ -166,7 +166,7 @@
             $scope.imagename = $scope.currentSong.album.picUrl;
 
             $scope.curSrc = $scope.currentSong.mp3Url;
-            alert($scope.curSrc);
+            // alert($scope.curSrc);
             $scope.modal.show();
 
             vid = document.getElementById("myVideo");
@@ -236,7 +236,7 @@
 
     function playAction() {
         vid = document.getElementById("myVideo");
-        alert(vid.currentSrc)
+        // alert(vid.currentSrc)
         if (vid.paused) {
             vid.play();
         } else {
