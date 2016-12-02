@@ -6,6 +6,13 @@ var token = "crossbell"; //此处需要你自己修改！
 
 
 router.get('/', function(req, res, next) {
+    // res.writeHead(200, {'Content-Type': 'text/html'});
+    // res.writeHead(200, {'Content-Type': 'text/html'});
+    // res.sendFile(__dirname + "/../views/home.html" );
+    res.sendfile('views/home.html');
+});
+
+router.get('/musicplay', function(req, res, next) {
     res.sendfile('views/musicplay.html');
 });
 

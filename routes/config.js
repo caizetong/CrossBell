@@ -6,6 +6,6 @@
 
 //Test Mode
 module.exports = {  
-    appid : "wx449234fdcaa5fe9b",  
-    appsecret : "d4624c36b6795d1d99dcf0547af5443d"  
+    appid : "wx824f65ef17325c1f",  
+    appsecret : "64e3b0b41dad0a5c528b85ba0cd85969"  
 }  
