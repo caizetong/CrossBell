@@ -161,17 +161,77 @@ app.get('/searchMusic', function(req, res1) {
 
         var body = '';
         res.on('data', function(chunk) {
-            body += chunk;
+            res1.write(chunk);
         });
         res.on('end', function() {
-            console.log(body);
-            res1.type('application/json');
-            res1.send(body);
+            // console.log(body);
+            // res1.type('application/json');
+            // res1.send(body);
+            res1.end();
         });
     });
 
     // write the json data
     reqPost.write(formdata);
+    reqPost.end();
+    reqPost.on('error', function(e) {
+        console.error(e);
+    });
+
+
+});
+
+app.get('/getLyric', function(req, res1) {
+    /**
+     * HOW TO Make an HTTP Call - POST
+     */
+    // do a POST request
+    // create the JSON object
+    var id = req.query.id;
+    console.log(id);
+
+    var path = "/api/song/lyric?os=pc&id=" + id + "&lv=-1&kv=-1&tv=-1";
+    // prepare the header
+    var postheaders = {
+        'Cookie': 'appver=1.5.0.75771',
+        'Referer': 'http://music.163.com/',
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+        // 'Content-Length': formdata.length
+            // 'Content-Length': Buffer.byteLength(jsonObject, 'utf8')
+    };
+
+    // the post options
+    var optionspost = {
+        host: 'music.163.com',
+        port: 80,
+        path: path,
+        method: 'GET',
+        headers: postheaders
+    };
+
+    console.info('Options prepared:');
+    console.info(optionspost);
+    console.info('Do the GET call');
+
+    // do the POST call
+    var reqPost = http.request(optionspost, function(res) {
+        console.log("statusCode: ", res.statusCode);
+        // uncomment it for header details
+        //  console.log("headers: ", res.headers);
+
+        var body = '';
+        res.on('data', function(chunk) {
+            res1.write(chunk);
+        });
+        res.on('end', function() {
+            // console.log(body);
+            // res1.type('application/json');
+            // res1.send(body);
+            res1.end();
+        });
+    });
+
+    // write the json data
     reqPost.end();
     reqPost.on('error', function(e) {
         console.error(e);
