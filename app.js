@@ -18,6 +18,7 @@ var config = {
 };
 
 var app = express();
+var formidable = require('formidable');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -40,11 +41,76 @@ app.use(express.query());
 
 var http = require('http');
 var querystring = require('querystring');
+var fs = require('fs');
+var util = require('util');
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
+
+var multiparty = require('multiparty');
+
+var multer = require('multer')
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now())
+  }
+})
+
+var upload = multer({ storage: storage })
+
+var uploadFun = upload.single('file');
+
+app.post('/profile', upload.single('avatar'), function(req, res, next) {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+    console.log("profilereq :" + req);
+})
+
+app.post('/upload', function(req, res, next) {
+    // req.files is array of `photos` files
+    // req.body will contain the text fields, if there were any
+    uploadFun(req, res, function(err) {
+        if (err) {
+            // An error occurred when uploading
+            res.writeHead(400, { 'content-type': 'text/plain' });
+            res.write('received upload:\n\n');
+            res.end(util.inspect({ "code": 400 , "err" : err}));
+        } else {
+            res.writeHead(200, { 'content-type': 'text/plain' });
+            res.write('received upload:\n\n');
+            res.end(util.inspect({ "code": "200" }));
+        }
+
+        // Everything went fine
+    })
+
+
+
+
+})
+
 
 app.get('/getData', function(req, res1) {
-    console.log(req.query.name);
-    console.log(req.query.tel);
+    console.log(req.query.userName);
 
+
+    res1.writeHead(200, { "Content-Type": "dapplication/json" });
+    res1.json({ "status": "get" });
+    res1.end;
+    return;
+});
+
+app.post('/getData', function(req, res1) {
+    console.log(req.query.userName);
+
+
+    // res1.writeHead(200, {"Content-Type": "application/json"});
+    res1.json({ "status": 200 });
+    res1.end;
+    return;
 
     var options = {
         host: 'localhost', // 这个不用说了, 请求地址
@@ -59,8 +125,10 @@ app.get('/getData', function(req, res1) {
         // console.log(res.text);
         res.on('data', function(chunk) {
             console.log('BODY: ' + chunk);
+            // res1.writeHead(200, {"Content-Type": "application/json"});
             res1.type('application/json');
             res1.json(JSON.parse(chunk));
+            res1.end;
         });
 
     });
@@ -72,6 +140,30 @@ app.get('/getData', function(req, res1) {
 
 
 });
+
+// app.post('/upload', function(req, res) {
+//     var form = new multiparty.Form();
+//     //设置编辑
+//     form.encoding = 'utf-8';
+//     //设置文件存储路径
+//     form.uploadDir = "uploads/images/";
+//     //设置单文件大小限制
+
+
+//     form.parse(req, function(err, fields, files) {
+//         if (err) {
+//             res.writeHead(400, { 'content-type': 'text/html' });
+//             res.end("invalid request: " + err.message);
+//             return;
+//         }
+//         console.log("fields:" + fields + "\nfiles:" + files);
+//         res.writeHead(200, { 'content-type': 'text/plain' });
+//         res.write('received upload:\n\n');
+//         res.end(util.inspect({ fields: fields, files: files }));
+//     });
+//     // don't forget to delete all req.files when done 
+// });
+
 
 app.get('/getMusic', function(req, res1) {
     console.log(req.query.name);
@@ -197,7 +289,7 @@ app.get('/getLyric', function(req, res1) {
         'Referer': 'http://music.163.com/',
         // 'Content-Type': 'application/x-www-form-urlencoded',
         // 'Content-Length': formdata.length
-            // 'Content-Length': Buffer.byteLength(jsonObject, 'utf8')
+        // 'Content-Length': Buffer.byteLength(jsonObject, 'utf8')
     };
 
     // the post options
@@ -252,49 +344,52 @@ app.use('/wechat', wechat(config, function(req, res, next) {
     //        res.reply({ type: "text", content: "you input " + message.Content});  
     //  }
     if ((message.MsgType == 'event') && (message.Event == 'subscribe')) {
-        var homePage = "<a href='http://crossbell.herokuapp.com/'>公众号主页</a>";
-        var magicMusic = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=1&sn=79ce26b5ea15ce6275ee3e0cc6fd9d00&chksm=71b6767946c1ff6ffe48fe9db490b864fcf565087e6a81078e0b344b6bd35c719b50aaab893a#rd'>Grad Erlija - Retrospektiva</a>";
-        var magicMusic2 = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244250&idx=1&sn=92678ea2ceedf0b46db8c6329faf0397&chksm=71b6767646c1ff60308ed9b0f3aa0b091c599c88f6bdbf24d5d0c213b85385447d12982b7d74#rd'>歌に形はないけれど゙</a>";
-        var replyString = "感谢你的关注！\n" + homePage + "\n以下是音乐推荐\n" + magicMusic + "\n" + magicMusic2 + "\n回复\nmagic\njp\n可以查看更多歌单\n输入-roll 或者 roll 可以随机100以内的数字";
+//         var homePage = "<a href='http://crossbell.herokuapp.com/'>公众号主页</a>";
+//         var magicMusic = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=1&sn=79ce26b5ea15ce6275ee3e0cc6fd9d00&chksm=71b6767946c1ff6ffe48fe9db490b864fcf565087e6a81078e0b344b6bd35c719b50aaab893a#rd'>Grad Erlija - Retrospektiva</a>";
+//         var magicMusic2 = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244250&idx=1&sn=92678ea2ceedf0b46db8c6329faf0397&chksm=71b6767646c1ff60308ed9b0f3aa0b091c599c88f6bdbf24d5d0c213b85385447d12982b7d74#rd'>歌に形はないけれど゙</a>";
+        var replyString = "感谢你的关注！\n";
         res.reply(replyString);
 
     } else if (message.FromUserName === 'cc') {
         res.reply('欢迎公众号主人');
-    } else if (message.Content.toLowerCase() === 'magic') {
-        res.reply([{
-            title: 'Grad Erlija - Retrospektiva',
-            description: '',
-            picurl: 'https://mmbiz.qlogo.cn/mmbiz_jpg/GGHzdWaiaKq2expibSqlpAwib2KpPib4PAsWODQglEFciaH64xMBg0yMYPRpJC5NYWtBLicewgYsANfnd4UIc1zpzDmQ/0?wx_fmt=jpeg',
-            url: 'http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=1&sn=79ce26b5ea15ce6275ee3e0cc6fd9d00&chksm=71b6767946c1ff6ffe48fe9db490b864fcf565087e6a81078e0b344b6bd35c719b50aaab893a#rd'
-        }, {
-            title: 'SPÏKA',
-            description: '',
-            picurl: 'https://mmbiz.qlogo.cn/mmbiz_jpg/GGHzdWaiaKq2expibSqlpAwib2KpPib4PAsWXZjIxLFRDL8l3rmIaaicTK3svVS7EArs4oib1iaNTcD1PvOs9kcnZwNxg/0?wx_fmt=jpeg',
-            url: 'http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=2&sn=593e66dad7cd90b55b5da07b692159b3&chksm=71b6767946c1ff6f1ed59474964e9f92bacb5044cc03125c6575a9aa893734e732c0fc442c18#rd'
-        }]);
-    } else if (message.Content.toLowerCase() === 'jp') {
-        res.reply([{
-            title: '歌に形はないけれど゙',
-            description: '',
-            picurl: 'https://mmbiz.qlogo.cn/mmbiz_png/GGHzdWaiaKq2expibSqlpAwib2KpPib4PAsW0Qom4PzbyoEbnOMvVv2iajRFL6K9jMibYNMt8iaTvETXWWremUnaM68eA/0?wx_fmt=png',
-            url: 'http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244250&idx=1&sn=92678ea2ceedf0b46db8c6329faf0397&chksm=71b6767646c1ff60308ed9b0f3aa0b091c599c88f6bdbf24d5d0c213b85385447d12982b7d74#rd'
-        }, {
-            title: '三线の花',
-            description: '',
-            picurl: 'https://mmbiz.qlogo.cn/mmbiz_png/GGHzdWaiaKq2expibSqlpAwib2KpPib4PAsWXX1CrnReWzkJPVflbiabHIbVCCiaPz25LkSrIfvTMV1wJeg6ZRqYQyLA/0?wx_fmt=png',
-            url: 'http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244251&idx=1&sn=f4e59fa8d7c5c6d8d94c0c6760a9c416&chksm=71b6767746c1ff614a34fc9a2ce53bd24fe0c5cf46cc0ed6c98d443993ad68d8bb0c9916bfbf#rd'
-        }]);
-    } else if (message.Content.toLowerCase() === 'music') {
-        res.reply({ type: "text", content: "回复 magic jp 获取各式歌单" });
-    } else if (message.Content.toLowerCase() === '-roll' || message.Content.toLowerCase() === 'roll') {
-        var randomNum = Math.random() * 100;
-        var result = Math.ceil(randomNum)
-        res.reply({ type: "text", content: '' + result });
-    } else {
-        var homePage = "<a href='http://crossbell.herokuapp.com/'>公众号主页</a>";
-        var magicMusic = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=1&sn=79ce26b5ea15ce6275ee3e0cc6fd9d00&chksm=71b6767946c1ff6ffe48fe9db490b864fcf565087e6a81078e0b344b6bd35c719b50aaab893a#rd'>Grad Erlija - Retrospektiva</a>";
-        var magicMusic2 = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244250&idx=1&sn=92678ea2ceedf0b46db8c6329faf0397&chksm=71b6767646c1ff60308ed9b0f3aa0b091c599c88f6bdbf24d5d0c213b85385447d12982b7d74#rd'>歌に形はないけれど゙</a>";
-        var replyString = "以下信息希望可以帮助您\n" + homePage + "\n音乐推荐\n" + magicMusic + "\n" + magicMusic2 + "\n回复\nmagic\njp\n可以查看更多歌单\n输入-roll 或者 roll 可以随机100以内的数字";
+    }
+//  else if (message.Content.toLowerCase() === 'magic') {
+//         res.reply([{
+//             title: 'Grad Erlija - Retrospektiva',
+//             description: '',
+//             picurl: 'https://mmbiz.qlogo.cn/mmbiz_jpg/GGHzdWaiaKq2expibSqlpAwib2KpPib4PAsWODQglEFciaH64xMBg0yMYPRpJC5NYWtBLicewgYsANfnd4UIc1zpzDmQ/0?wx_fmt=jpeg',
+//             url: 'http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=1&sn=79ce26b5ea15ce6275ee3e0cc6fd9d00&chksm=71b6767946c1ff6ffe48fe9db490b864fcf565087e6a81078e0b344b6bd35c719b50aaab893a#rd'
+//         }, {
+//             title: 'SPÏKA',
+//             description: '',
+//             picurl: 'https://mmbiz.qlogo.cn/mmbiz_jpg/GGHzdWaiaKq2expibSqlpAwib2KpPib4PAsWXZjIxLFRDL8l3rmIaaicTK3svVS7EArs4oib1iaNTcD1PvOs9kcnZwNxg/0?wx_fmt=jpeg',
+//             url: 'http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=2&sn=593e66dad7cd90b55b5da07b692159b3&chksm=71b6767946c1ff6f1ed59474964e9f92bacb5044cc03125c6575a9aa893734e732c0fc442c18#rd'
+//         }]);
+//     } else if (message.Content.toLowerCase() === 'jp') {
+//         res.reply([{
+//             title: '歌に形はないけれど゙',
+//             description: '',
+//             picurl: 'https://mmbiz.qlogo.cn/mmbiz_png/GGHzdWaiaKq2expibSqlpAwib2KpPib4PAsW0Qom4PzbyoEbnOMvVv2iajRFL6K9jMibYNMt8iaTvETXWWremUnaM68eA/0?wx_fmt=png',
+//             url: 'http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244250&idx=1&sn=92678ea2ceedf0b46db8c6329faf0397&chksm=71b6767646c1ff60308ed9b0f3aa0b091c599c88f6bdbf24d5d0c213b85385447d12982b7d74#rd'
+//         }, {
+//             title: '三线の花',
+//             description: '',
+//             picurl: 'https://mmbiz.qlogo.cn/mmbiz_png/GGHzdWaiaKq2expibSqlpAwib2KpPib4PAsWXX1CrnReWzkJPVflbiabHIbVCCiaPz25LkSrIfvTMV1wJeg6ZRqYQyLA/0?wx_fmt=png',
+//             url: 'http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244251&idx=1&sn=f4e59fa8d7c5c6d8d94c0c6760a9c416&chksm=71b6767746c1ff614a34fc9a2ce53bd24fe0c5cf46cc0ed6c98d443993ad68d8bb0c9916bfbf#rd'
+//         }]);
+//     } else if (message.Content.toLowerCase() === 'music') {
+//         res.reply({ type: "text", content: "回复 magic jp 获取各式歌单" });
+//     } else if (message.Content.toLowerCase() === '-roll' || message.Content.toLowerCase() === 'roll') {
+//         var randomNum = Math.random() * 100;
+//         var result = Math.ceil(randomNum)
+//         res.reply({ type: "text", content: '' + result });
+//     } 
+    else {
+        var homePage = "<a href='http://www.utwigo.com/index.php?r=s/p&i=ad462f'>每日精选</a>";
+        var wenzhang = "<a href='https://mp.weixin.qq.com/s/yYxDjBpq3ZbYe-U5qqaWgw'>图文 - 每日精选</a>";
+//         var magicMusic = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244245&idx=1&sn=79ce26b5ea15ce6275ee3e0cc6fd9d00&chksm=71b6767946c1ff6ffe48fe9db490b864fcf565087e6a81078e0b344b6bd35c719b50aaab893a#rd'>Grad Erlija - Retrospektiva</a>";
+//         var magicMusic2 = "<a href='http://mp.weixin.qq.com/s?__biz=MzI2NDA5NjQ1MQ==&mid=519244250&idx=1&sn=92678ea2ceedf0b46db8c6329faf0397&chksm=71b6767646c1ff60308ed9b0f3aa0b091c599c88f6bdbf24d5d0c213b85385447d12982b7d74#rd'>歌に形はないけれど゙</a>";
+        var replyString = "欢迎，请选择你要访问的链接\n" + homePage;
         res.reply(replyString);
     }
 }));
