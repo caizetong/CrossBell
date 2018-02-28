@@ -1,5 +1,5 @@
 var http = require('http');
-var port = 18080;
+var port = 80;
 http.createServer(function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/html'});
     var body = ' \
